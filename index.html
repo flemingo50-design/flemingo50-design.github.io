@@ -3,29 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吴鹏举的个人主页</title>
+    <title>System Compromised...</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            background-color: #f4f4f9;
-            margin-top: 100px;
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden; /* 隐藏滚动条，做到全屏沉浸感 */
+            font-family: 'Courier New', Courier, monospace;
         }
-        h1 { color: #2c3e50; }
-        p { color: #34495e; font-size: 1.2em; }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        canvas {
+            display: block;
+        }
+        /* 屏幕中央的伪造终端文字 */
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #0F0;
+            font-size: 22px;
+            text-align: center;
+            text-shadow: 0 0 8px #0F0;
+            pointer-events: none; /* 防止遮挡鼠标操作 */
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 1px solid #0F0;
+            border-radius: 5px;
+        }
+        .cursor {
             display: inline-block;
+            width: 10px;
+            height: 22px;
+            background-color: #0F0;
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>你好！我是吴鹏举 👋</h1>
-        <p>这是我在 GitHub Pages 上的第一个测试网页。</p>
+    <canvas id="matrix"></canvas>
+    
+    <div class="overlay">
+        <h2>[ ROOT ACCESS GRANTED ]</h2>
+        <p>User: 吴鹏举</p>
+        <p>Status: 正在初始化全链路在线黑产监测与阻断系统<span class="cursor"></span></p>
     </div>
+
+    <script>
+        // 瀑布流特效核心逻辑
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // 让画布全屏
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 字符集（包含了大小写字母、数字和一些特殊符号）
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize; // 计算屏幕能放多少列
+        const drops = [];
+
+        // 初始化每一列的下落起点
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        // 绘制每一帧
+        function draw() {
+            // 给背景涂上一层带透明度的黑色，形成尾迹拖影效果
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 设置文字颜色和字体
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            // 循环遍历每一列，画出字符
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // 如果代码掉到底部了，就以随机概率让它回到顶部，形成错落有致的感觉
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // 每 33 毫秒刷新一次屏幕（大约 30 帧/秒）
+        setInterval(draw, 33);
+
+        // 监听窗口大小变化，动态调整画布大小
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
