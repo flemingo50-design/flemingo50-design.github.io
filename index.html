@@ -23,22 +23,28 @@
         .alert-banner { background: #ffeef0; border-left: 4px solid #cb2431; padding: 15px 20px; color: #b31d28; font-size: 15px; margin-bottom: 25px; line-height: 1.5;}
         
         /* 动态溯源控制台 */
-        .trace-console { background: #0d1117; color: #8b949e; font-family: 'Courier New', monospace; padding: 20px; border-radius: 6px; font-size: 14px; margin-bottom: 25px; min-height: 180px;}
-        .trace-line { margin: 5px 0; display: none; }
+        .trace-console { background: #0d1117; color: #8b949e; font-family: 'Courier New', monospace; padding: 20px; border-radius: 6px; font-size: 14px; margin-bottom: 25px; min-height: 250px;}
+        .trace-line { margin: 8px 0; display: none; } /* 默认隐藏所有行 */
         .trace-line.active { display: block; }
         .text-green { color: #3fb950; font-weight: bold;}
         .text-red { color: #ff7b72; font-weight: bold;}
         .text-blue { color: #79c0ff; }
+        .text-yellow { color: #d29922; }
         
+        /* 闪烁光标效果 */
+        .cursor { display: inline-block; width: 8px; height: 15px; background-color: #8b949e; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
         /* 威胁指数条 */
         .threat-meter { margin-top: 20px; border-top: 1px solid #e1e4e8; padding-top: 20px;}
         .meter-label { display: flex; justify-content: space-between; font-size: 14px; color: #24292e; font-weight: 600; margin-bottom: 8px;}
         .meter-bg { width: 100%; height: 12px; background: #e1e4e8; border-radius: 6px; overflow: hidden;}
-        .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f1e05a 0%, #cb2431 100%); transition: width 3s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        /* 修改了过渡时间，让红条涨得非常慢（5秒） */
+        .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f1e05a 0%, #cb2431 100%); transition: width 5s cubic-bezier(0.4, 0, 0.2, 1); }
         
         /* 底部伪装元素 */
         .waf-footer { font-size: 12px; color: #6a737d; text-align: center; margin-top: 30px; padding-bottom: 20px;}
-        .hidden-btn { color: #f4f5f7; border: none; background: none; cursor: crosshair; } /* 隐形按钮 */
+        .hidden-btn { color: #f4f5f7; border: none; background: none; cursor: crosshair; }
 
         /* 阶段三：底牌揭晓 */
         #reveal-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 30px; box-shadow: 0 0 50px rgba(203, 36, 49, 0.5); border-radius: 8px; text-align: center; font-family: monospace; font-size: 16px; border: 2px solid #cb2431; z-index: 100;}
@@ -68,28 +74,29 @@
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                     连接已阻断 (Connection Blocked)
                 </div>
-                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">Ray ID: <span id="ray-id"></span></div>
+                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">Event ID: <span id="ray-id"></span></div>
             </div>
             
             <div class="waf-body">
                 <div class="alert-banner">
-                    <strong>安全策略违规提示：</strong><br>
-                    您的终端发起了敏感目录遍历及文件越权请求。此行为已触发“全链路在线黑产监测与阻断系统”的联邦级防御机制。
+                    <strong>高危安全策略违规提示：</strong><br>
+                    您的终端发起了敏感目录遍历及文件越权请求。此行为已触发“全链路在线黑产监测与阻断系统”的联邦级防御机制。请不要关闭页面，等待取证完成。
                 </div>
 
                 <div class="trace-console" id="trace-box">
-                    <div class="trace-line active">[*] 正在初始化实时威胁溯源模块...</div>
-                    <div class="trace-line" id="line-2">[+] 提取请求指纹 (User-Agent): <span class="text-blue" id="ua-text"></span></div>
-                    <div class="trace-line" id="line-3">[*] 调用外部审计接口 (Geo-IP API) 定位追踪...</div>
-                    <div class="trace-line" id="line-4">[!] <span class="text-red">锁定攻击源真实 IP: </span><span class="text-green" id="ip-text">正在解析...</span></div>
-                    <div class="trace-line" id="line-5">[!] <span class="text-red">锁定物理边界定位: </span><span class="text-green" id="geo-text">正在解析...</span></div>
-                    <div class="trace-line" id="line-6">[+] 终端特征与取证数据已自动上报至云端安全中心。</div>
+                    <div class="trace-line active" id="line-1">[*] 正在初始化实时威胁溯源模块...<span class="cursor" id="cursor-1"></span></div>
+                    <div class="trace-line" id="line-2">[+] 提取请求指纹 (User-Agent): <span class="text-blue" id="ua-text"></span><span class="cursor" id="cursor-2"></span></div>
+                    <div class="trace-line" id="line-3">[*] <span class="text-yellow">正在穿透客户端代理层，剥离匿名伪装...</span><span class="cursor" id="cursor-3"></span></div>
+                    <div class="trace-line" id="line-4">[*] 调用云端审计接口 (Geo-IP API) 定位追踪...<span class="cursor" id="cursor-4"></span></div>
+                    <div class="trace-line" id="line-5">[!] <span class="text-red">锁定攻击源真实 IP: </span><span class="text-green" id="ip-text">正在解析...</span><span class="cursor" id="cursor-5"></span></div>
+                    <div class="trace-line" id="line-6">[!] <span class="text-red">锁定物理边界定位: </span><span class="text-green" id="geo-text">正在解析...</span><span class="cursor" id="cursor-6"></span></div>
+                    <div class="trace-line" id="line-7">[+] 终端特征与取证数据已自动上报至云端安全中心。<span class="cursor" id="cursor-7"></span></div>
                 </div>
 
                 <div class="threat-meter">
                     <div class="meter-label">
                         <span>当前终端威胁评估指数</span>
-                        <span style="color: #cb2431;" id="score-text">分析中...</span>
+                        <span style="color: #cb2431;" id="score-text">分析中... (0 / 100)</span>
                     </div>
                     <div class="meter-bg">
                         <div class="meter-fill" id="meter-fill"></div>
@@ -106,60 +113,89 @@
 
     <div id="reveal-modal">
         <h2 style="color: #cb2431; margin-top: 0;">🎯 捕获成功！</h2>
-        <p>你已触发 吴鹏举 的专属主动防御蜜罐。</p>
-        <p>刚才解析出的 <span class="highlight" id="joke-ip">IP</span> 和地址都是真的！</p>
+        <p>你已触发专属主动防御蜜罐。</p>
+        <p>刚才解析出的 <span class="highlight" id="joke-ip" style="color:red; font-weight:bold;">IP</span> 和地址都是真的！</p>
         <p style="font-size: 14px; color: #666; margin-top: 20px;">* 这只是个前端技术演示，未收集任何隐私数据。</p>
     </div>
 
     <script>
+        // 移除旧光标的辅助函数，让光标永远只停留在最新的一行
+        function moveCursor(fromId, toId) {
+            document.getElementById('cursor-' + fromId).style.display = 'none';
+        }
+
         function triggerTrap(event) {
             event.preventDefault();
             
-            // 切换界面
             document.getElementById('fake-directory').style.display = 'none';
             document.getElementById('waf-alert').style.display = 'block';
 
-            // 基础信息填充
-            document.getElementById('ray-id').innerText = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('').toLowerCase();
+            document.getElementById('ray-id').innerText = Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
             document.getElementById('time-text').innerText = new Date().toUTCString();
             document.getElementById('ua-text').innerText = navigator.userAgent;
 
-            // 启动态势感知动画（延迟加载每一行，营造真实计算感）
-            setTimeout(() => { document.getElementById('line-2').classList.add('active'); }, 800);
-            setTimeout(() => { document.getElementById('line-3').classList.add('active'); }, 1500);
+            // ===== 核心时间轴控制 (毫秒) =====
+            // 1500ms (1.5秒) 后显示第二行 UA 信息
+            setTimeout(() => { 
+                document.getElementById('line-2').classList.add('active'); 
+                moveCursor(1, 2);
+            }, 1500);
 
-            // 调用 GeoJS 获取真实位置
+            // 3500ms (3.5秒) 后显示正在穿透代理 (吓唬人专用停顿)
+            setTimeout(() => { 
+                document.getElementById('line-3').classList.add('active'); 
+                moveCursor(2, 3);
+            }, 3500);
+
+            // 6000ms (6秒) 后显示调用 API
+            setTimeout(() => { 
+                document.getElementById('line-4').classList.add('active'); 
+                moveCursor(3, 4);
+                
+                // 威胁指数条开始缓慢上涨
+                document.getElementById('meter-fill').style.width = '45%';
+                document.getElementById('score-text').innerText = '正在评估... (45 / 100)';
+            }, 6000);
+
+            // 调用接口获取真实信息
             fetch('https://get.geojs.io/v1/ip/geo.json')
                 .then(response => response.json())
                 .then(data => {
-                    setTimeout(() => { 
-                        document.getElementById('line-4').classList.add('active'); 
-                        document.getElementById('ip-text').innerText = data.ip + " (Verified)";
-                        document.getElementById('joke-ip').innerText = data.ip; // 存入彩蛋
-                    }, 2500);
-
+                    // 8500ms (8.5秒) 后爆出真实 IP
                     setTimeout(() => { 
                         document.getElementById('line-5').classList.add('active'); 
-                        // 组合城市和运营商信息
+                        moveCursor(4, 5);
+                        document.getElementById('ip-text').innerText = data.ip + " (Verified)";
+                        document.getElementById('joke-ip').innerText = data.ip; 
+                    }, 8500);
+
+                    // 11000ms (11秒) 后爆出真实地理位置和宽带
+                    setTimeout(() => { 
+                        document.getElementById('line-6').classList.add('active'); 
+                        moveCursor(5, 6);
                         let location = (data.city || data.region || '未知城市') + " - " + (data.organization || 'ISP');
                         document.getElementById('geo-text').innerText = location;
-                    }, 3500);
-
-                    // 最后一步，拉满威胁进度条
-                    setTimeout(() => {
-                        document.getElementById('line-6').classList.add('active');
+                        
+                        // 进度条拉满到 98
                         document.getElementById('meter-fill').style.width = '98%';
                         document.getElementById('score-text').innerText = '98 / 100 (CRITICAL)';
-                    }, 4500);
+                        document.getElementById('score-text').style.fontWeight = 'bold';
+                    }, 11000);
+
+                    // 13000ms (13秒) 后显示上报完成
+                    setTimeout(() => {
+                        document.getElementById('line-7').classList.add('active');
+                        moveCursor(6, 7);
+                    }, 13000);
                 })
                 .catch(() => {
-                    // 如果被广告拦截器挡住了 API
-                    setTimeout(() => { document.getElementById('line-4').classList.add('active'); document.getElementById('ip-text').innerText = "获取失败 (防御拦截)"; }, 2500);
-                    setTimeout(() => { document.getElementById('line-5').classList.add('active'); document.getElementById('geo-text').innerText = "获取失败"; }, 3500);
+                    // 失败备用方案也拉长了时间
+                    setTimeout(() => { document.getElementById('line-5').classList.add('active'); moveCursor(4, 5); document.getElementById('ip-text').innerText = "获取失败 (防御拦截)"; }, 8500);
+                    setTimeout(() => { document.getElementById('line-6').classList.add('active'); moveCursor(5, 6); document.getElementById('geo-text').innerText = "获取失败"; }, 11000);
+                    setTimeout(() => { document.getElementById('line-7').classList.add('active'); moveCursor(6, 7); }, 13000);
                 });
         }
 
-        // 揭秘彩蛋触发函数
         function showReveal() {
             document.getElementById('reveal-modal').style.display = 'block';
         }
