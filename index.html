@@ -1,71 +1,100 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全链路在线黑产监测与阻断系统 - 内部访问</title>
+    <title>Index of /backend/data_backup/</title>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-box {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            padding: 40px;
-            width: 350px;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-        h2 { margin-top: 0; font-size: 20px; color: #58a6ff; }
-        .warning-badge {
-            background-color: #da3633;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-        input {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: white;
-            border-radius: 4px;
-        }
-        button {
-            width: 95%;
-            padding: 10px;
-            background-color: #238636;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-        button:hover { background-color: #2ea043; }
+        /* 默认状态：伪装成简陋的 Nginx 目录泄露风格 */
+        body { font-family: monospace; background-color: white; color: black; margin: 20px; }
+        a { color: #0000ee; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        hr { border: 0; border-bottom: 1px solid #ccc; margin: 15px 0; }
+        table { width: 60%; text-align: left; }
+        th, td { padding: 4px; }
+
+        /* 触发陷阱后：企业级 WAF 拦截页面风格 */
+        #waf-alert { display: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8f9fa; position: fixed; top: 0; left: 0; width: 100%; height: 100%; padding-top: 50px; }
+        .waf-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-top: 5px solid #dc3545; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 4px; }
+        .waf-header { color: #dc3545; font-size: 28px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; }
+        .waf-header svg { width: 32px; height: 32px; margin-right: 12px; fill: currentColor; }
+        .waf-info { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 16px; font-family: monospace; }
+        .waf-details p { margin: 8px 0; color: #495057; }
+        .highlight { font-weight: bold; color: #dc3545; }
     </style>
 </head>
-<body>
-    <div class="login-box">
-        <div class="warning-badge">RESTRICTED AREA</div>
-        <h2>全链路在线黑产监测与阻断系统</h2>
-        <p style="font-size: 12px; color: #8b949e;">联邦级主动防御核心节点</p>
-        <input type="text" placeholder="内部授权 ID" id="userid">
-        <input type="password" placeholder="动态密钥" id="pwd">
-        <button onclick="window.location.href='warning.html'">验证并进入系统</button>
+<body id="main-body">
+
+    <div id="fake-directory">
+        <h1>Index of /backend/data_backup/</h1>
+        <hr>
+        <table>
+            <tr><th>Name</th><th>Last modified</th><th>Size</th><th>Description</th></tr>
+            <tr><td><a href="../">../</a></td><td></td><td>-</td><td></td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">admin_passwords.txt</a></td><td>19-Feb-2026 08:32</td><td>12K</td><td>[管理员密码本]</td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">black_market_nodes.json</a></td><td>20-Feb-2026 14:11</td><td>856K</td><td>[监测节点配置文件]</td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">core_database_dump.sql</a></td><td>21-Feb-2026 02:00</td><td>4.2M</td><td>[核心数据库完整备份]</td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">config.ini.bak</a></td><td>15-Feb-2026 11:22</td><td>4K</td><td>[系统环境配置]</td></tr>
+        </table>
+        <hr>
+        <div style="font-size: 12px; color: #666;">nginx/1.18.0 (Ubuntu)</div>
     </div>
+
+    <div id="waf-alert">
+        <div class="waf-container">
+            <div class="waf-header">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                访问被拒绝 (Access Denied)
+            </div>
+            <p>您的访问请求已被安全策略拦截。此操作已被判定为<strong>高危入侵尝试</strong>，并已自动上报至全链路在线黑产监测与阻断系统溯源中心。</p>
+            
+            <div class="waf-info">
+                <strong>[!] 警告信息：</strong> 捕获到未授权的文件越权访问及目录遍历行为。
+            </div>
+
+            <div class="waf-details">
+                <p>溯源取证数据已锁定：</p>
+                <ul>
+                    <li><strong>攻击者公网 IP：</strong> <span id="real-ip" class="highlight">正在获取...</span></li>
+                    <li><strong>浏览器指纹 (User-Agent)：</strong> <span id="user-agent"></span></li>
+                    <li><strong>防御节点位置：</strong> 主动防御反制蜜罐 (Honeypot Node-07)</li>
+                    <li><strong>事件追踪 ID：</strong> <span id="ray-id"></span></li>
+                    <li><strong>时间戳：</strong> <span id="timestamp"></span></li>
+                </ul>
+                <p style="margin-top: 30px; color: #dc3545; font-weight: bold; font-size: 14px;">
+                    ▶ 您的终端特征已被完全记录。切勿进行进一步的探测，否则系统将自动启动反制渗透协议。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function triggerTrap(event) {
+            event.preventDefault(); // 阻止默认的链接跳转
+            
+            // 切换 UI：隐藏目录，显示 WAF 报警
+            document.getElementById('fake-directory').style.display = 'none';
+            document.body.style.backgroundColor = '#f8f9fa';
+            document.getElementById('waf-alert').style.display = 'block';
+
+            // 填充浏览器指纹和当前时间
+            document.getElementById('user-agent').innerText = navigator.userAgent;
+            document.getElementById('timestamp').innerText = new Date().toUTCString();
+            
+            // 生成一个随机的高级追踪码唬人
+            const rayId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            document.getElementById('ray-id').innerText = rayId + '-HK';
+
+            // 核心杀招：调用真实的 API 获取访问者的公网 IP
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('real-ip').innerText = data.ip + " (已锁定)";
+                })
+                .catch(error => {
+                    document.getElementById('real-ip').innerText = "IP追踪完成 (数据已加密回传)";
+                });
+        }
+    </script>
 </body>
 </html>
