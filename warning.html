@@ -3,80 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>!!! UNAUTHORIZED ACCESS !!!</title>
+    <title>!!! ACTIVE DEFENSE TRIGGERED !!!</title>
     <style>
-        body {
-            background-color: #110000;
-            color: #ff0000;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
-            overflow: hidden;
-            font-size: 18px;
+        body, html { margin: 0; padding: 0; height: 100%; background-color: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+        
+        /* 阶段一：伪造的企业级 WAF 拦截页面 */
+        #waf-screen {
+            position: absolute; width: 100%; height: 100%; background-color: #f8f9fa; z-index: 10;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
-        #terminal {
-            white-space: pre-wrap;
-            line-height: 1.5;
-            display: inline;
+        .waf-box { background: white; padding: 40px; border-top: 5px solid #dc3545; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 80%; max-width: 600px; }
+        .waf-title { color: #dc3545; font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        
+        /* WAF 崩溃的屏幕故障（Glitch）动画 */
+        .glitch-effect { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; color: red; background: black; }
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-5px, 5px) }
+            40% { transform: translate(-5px, -5px) }
+            60% { transform: translate(5px, 5px) }
+            80% { transform: translate(5px, -5px) }
+            100% { transform: translate(0) }
         }
-        .blinking-cursor {
-            font-weight: bold;
-            font-size: 20px;
-            animation: blink 1s step-end infinite;
+
+        /* 阶段二：真实的极客反制终端 */
+        #terminal-screen {
+            display: none; padding: 20px; color: #ff3333; font-size: 16px; line-height: 1.5;
         }
+        .blinking-cursor { font-weight: bold; font-size: 18px; animation: blink 1s step-end infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .reveal { font-size: 24px; color: #00ff00; display: none; margin-top: 30px; font-weight: bold; }
+        .highlight { color: #00ff00; font-weight: bold; }
+        .reveal { font-size: 20px; color: #00ff00; display: none; margin-top: 30px; border: 1px dashed #00ff00; padding: 15px; }
     </style>
 </head>
 <body>
-    <div id="terminal"></div><span class="blinking-cursor">_</span>
-    <div id="reveal" class="reveal">
-        [✓] 哈哈哈，开个玩笑！<br>
-        [✓] 你已触发 吴鹏举 的主页防御蜜罐。<br>
-        [✓] 放心，没有任何数据被窃取。欢迎来到我的地盘！
+
+    <div id="waf-screen">
+        <div class="waf-box" id="waf-box">
+            <div class="waf-title">⛔ 访问被拒绝 (Access Denied)</div>
+            <p>您的操作已触发<strong>全链路在线黑产监测与阻断系统</strong>的安全策略。</p>
+            <p style="color: #721c24; background: #f8d7da; padding: 10px;">[!] 警告：系统正在将您的终端特征上传至反诈回溯中心...</p>
+            <p style="font-size: 12px; color: #666; margin-top: 30px;">Event ID: <span id="fake-id"></span></p>
+        </div>
+    </div>
+
+    <div id="terminal-screen">
+        <div id="terminal-content"></div><span class="blinking-cursor">_</span>
+        <div id="reveal" class="reveal">
+            [✓] 警报解除。<br>
+            [✓] 你已完全陷入 吴鹏举 的主动防御蜜罐。<br>
+            [✓] 刚才弹出的 IP 和城市都是真的，但我没存。网络水深，注意安全！
+        </div>
     </div>
 
     <script>
-        const userAgent = navigator.userAgent;
-        const platform = navigator.platform;
-        const terminal = document.getElementById('terminal');
+        const wafScreen = document.getElementById('waf-screen');
+        const wafBox = document.getElementById('waf-box');
+        const terminalScreen = document.getElementById('terminal-screen');
+        const terminalContent = document.getElementById('terminal-content');
         const reveal = document.getElementById('reveal');
-        
-        const logs = [
-            "[!] 警告：系统检测到未授权的非法访问尝试！",
-            "[!] 正在触发反制协议 (Active Defense Protocol)...",
-            "[+] 锁定入侵者系统特征：",
-            "    -> 操作系统: " + platform,
-            "    -> 浏览器环境: " + userAgent,
-            "[+] 正在绕过本地防火墙...",
-            "[+] 成功建立反向隧道 (Reverse Shell).",
-            "[*] 正在扫描本地局域网...",
-            "[*] 发现 3 个在线设备.",
-            "[!] 开始打包并上传 C:\\Users\\Administrator\\Documents...",
-            "    [||||||              ] 30%",
-            "    [|||||||||||||       ] 65%",
-            "    [||||||||||||||||||||] 100%",
-            "[!] 文件上传完毕.",
-            "[!] 您的设备已完全被系统接管。"
-        ];
 
-        let lineIndex = 0;
+        // 随机生成一个高大上的 Event ID
+        document.getElementById('fake-id').innerText = Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
 
-        function printLog() {
-            if (lineIndex < logs.length) {
-                terminal.innerHTML += logs[lineIndex] + "<br>";
-                lineIndex++;
-                setTimeout(printLog, Math.random() * 700 + 300);
-            } else {
-                // 这里我已经帮你改成了 5000 (5秒)，且确保语法正确！
+        // 核心：调用 GeoJS API 获取极其详细的网络信息 (IP, 城市, 运营商)
+        fetch('https://get.geojs.io/v1/ip/geo.json')
+            .then(response => response.json())
+            .then(data => initHackSequence(data))
+            .catch(() => initHackSequence({ ip: '未知 IP', city: '未知城市', organization: '未知运营商' }));
+
+        function initHackSequence(geoData) {
+            // 第一步：让 WAF 停留 2.5 秒，然后突然开始“故障”
+            setTimeout(() => {
+                wafBox.classList.add('glitch-effect');
+                wafBox.innerHTML = "<h1>SYSTEM OVERRIDE...</h1><h2>ROOT PRIVILEGES ESCALATED</h2>";
+                
+                // 第二步：故障 0.8 秒后，红屏消失，进入黑终端
                 setTimeout(() => {
-                    reveal.style.display = "block";
-                    document.body.style.backgroundColor = "#000000";
-                    terminal.style.color = "#8b949e";
-                }, 5000); 
-            }
+                    wafScreen.style.display = 'none';
+                    terminalScreen.style.display = 'block';
+                    startTypingLogs(geoData);
+                }, 800);
+
+            }, 2500);
         }
 
-        setTimeout(printLog, 500);
+        function startTypingLogs(geo) {
+            const logs = [
+                "[!] WAF 拦截模块已被内部权限覆盖。",
+                "[*] 全链路在线黑产阻断系统 - 反制模式：ON",
+                "[+] 正在锁定入侵者物理维度数据...",
+                "    -> 公网出口 IP: <span class='highlight'>" + geo.ip + "</span>",
+                "    -> 物理定位边界: <span class='highlight'>" + (geo.city || "获取中...") + "</span>",
+                "    -> 宽带服务商: " + (geo.organization || "ISP"),
+                "    -> 浏览器内核: " + navigator.userAgent.substring(0, 50) + "...",
+                "[+] 建立本地主机反向连接通道... 成功",
+                "[*] 正在扫描本地局域网开放端口...",
+                "[*] 正在扫描金融类敏感进程...",
+                "[!] 警告：发现 A股 证券交易软件驻留进程！",
+                "    -> 正在注入挂单指令...",
+                "    -> [强制平仓] 指令下达成功 (状态：模拟演示中)",
+                "[+] 正在提取并打包浏览器 Cookie 与密码本...",
+                "    [██████████          ] 50%",
+                "    [████████████████████] 100%",
+                "[!] 提取完毕。入侵回溯完成。"
+            ];
+
+            let lineIndex = 0;
+
+            function printLog() {
+                if (lineIndex < logs.length) {
+                    terminalContent.innerHTML += logs[lineIndex] + "<br>";
+                    lineIndex++;
+                    // 模拟极客飞快的打字和程序运行停顿
+                    setTimeout(printLog, Math.random() * 400 + 100); 
+                } else {
+                    // 打完日志等 3 秒弹出底牌
+                    setTimeout(() => {
+                        reveal.style.display = "block";
+                        terminalScreen.style.color = "#555"; // 让上面的日志变暗，突出底牌
+                    }, 3000); 
+                }
+            }
+            // 终端显示后，延迟 0.5 秒开始敲字
+            setTimeout(printLog, 500);
+        }
     </script>
 </body>
 </html>
