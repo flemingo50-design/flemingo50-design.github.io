@@ -13,41 +13,65 @@
         table { width: 100%; max-width: 800px; text-align: left; border-collapse: collapse;}
         th, td { padding: 6px 4px; }
         
-        /* 阶段二：WAF 动态分析面板 */
-        #waf-alert { display: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; position: fixed; top: 0; left: 0; width: 100%; height: 100%; padding-top: 40px; box-sizing: border-box;}
-        .waf-container { max-width: 850px; margin: 0 auto; background: white; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border: 1px solid #e1e4e8;}
-        .waf-header { background-color: #cb2431; color: white; padding: 20px 30px; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;}
-        .waf-header svg { width: 28px; height: 28px; fill: white; margin-right: 10px; vertical-align: middle;}
+        /* 阶段二：WAF 动态分析面板 (修复了手机端无法滚动的问题) */
+        #waf-alert { 
+            display: none; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f4f5f7; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            padding-top: 20px; /* 顶部留白缩小一点，适应手机 */
+            padding-bottom: 50px; /* 底部留白，防止滑不到底 */
+            box-sizing: border-box;
+            overflow-y: auto; /* 🌟 核心修复：允许上下滚动！ */
+        }
         
-        .waf-body { padding: 30px; }
-        .alert-banner { background: #ffeef0; border-left: 4px solid #cb2431; padding: 15px 20px; color: #b31d28; font-size: 15px; margin-bottom: 25px; line-height: 1.5;}
+        /* 优化了容器在手机上的宽度 */
+        .waf-container { 
+            width: 92%; /* 手机上占满 92% 宽度 */
+            max-width: 850px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 6px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            overflow: hidden; 
+            border: 1px solid #e1e4e8;
+        }
+        
+        .waf-header { background-color: #cb2431; color: white; padding: 15px 20px; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;}
+        .waf-header svg { width: 24px; height: 24px; fill: white; margin-right: 8px; vertical-align: middle;}
+        
+        .waf-body { padding: 20px; }
+        .alert-banner { background: #ffeef0; border-left: 4px solid #cb2431; padding: 12px 15px; color: #b31d28; font-size: 14px; margin-bottom: 20px; line-height: 1.5;}
         
         /* 动态溯源控制台 */
-        .trace-console { background: #0d1117; color: #8b949e; font-family: 'Courier New', monospace; padding: 20px; border-radius: 6px; font-size: 14px; margin-bottom: 25px; min-height: 250px;}
-        .trace-line { margin: 8px 0; display: none; } /* 默认隐藏所有行 */
+        .trace-console { background: #0d1117; color: #8b949e; font-family: 'Courier New', monospace; padding: 15px; border-radius: 6px; font-size: 13px; margin-bottom: 25px; min-height: 250px;}
+        .trace-line { margin: 8px 0; display: none; }
         .trace-line.active { display: block; }
         .text-green { color: #3fb950; font-weight: bold;}
         .text-red { color: #ff7b72; font-weight: bold;}
-        .text-blue { color: #79c0ff; }
+        .text-blue { color: #79c0ff; word-break: break-all; /* 防止手机端超长UA撑破屏幕 */}
         .text-yellow { color: #d29922; }
         
         /* 闪烁光标效果 */
-        .cursor { display: inline-block; width: 8px; height: 15px; background-color: #8b949e; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+        .cursor { display: inline-block; width: 6px; height: 13px; background-color: #8b949e; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* 威胁指数条 */
-        .threat-meter { margin-top: 20px; border-top: 1px solid #e1e4e8; padding-top: 20px;}
-        .meter-label { display: flex; justify-content: space-between; font-size: 14px; color: #24292e; font-weight: 600; margin-bottom: 8px;}
-        .meter-bg { width: 100%; height: 12px; background: #e1e4e8; border-radius: 6px; overflow: hidden;}
-        /* 修改了过渡时间，让红条涨得非常慢（5秒） */
+        .threat-meter { margin-top: 15px; border-top: 1px solid #e1e4e8; padding-top: 15px;}
+        .meter-label { display: flex; justify-content: space-between; font-size: 13px; color: #24292e; font-weight: 600; margin-bottom: 8px;}
+        .meter-bg { width: 100%; height: 10px; background: #e1e4e8; border-radius: 5px; overflow: hidden;}
         .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f1e05a 0%, #cb2431 100%); transition: width 5s cubic-bezier(0.4, 0, 0.2, 1); }
         
         /* 底部伪装元素 */
-        .waf-footer { font-size: 12px; color: #6a737d; text-align: center; margin-top: 30px; padding-bottom: 20px;}
+        .waf-footer { font-size: 12px; color: #6a737d; text-align: center; margin-top: 25px; padding-bottom: 10px;}
         .hidden-btn { color: #f4f5f7; border: none; background: none; cursor: crosshair; }
 
-        /* 阶段三：底牌揭晓 */
-        #reveal-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 30px; box-shadow: 0 0 50px rgba(203, 36, 49, 0.5); border-radius: 8px; text-align: center; font-family: monospace; font-size: 16px; border: 2px solid #cb2431; z-index: 100;}
+        /* 阶段三：底牌揭晓 (手机端居中优化) */
+        #reveal-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; box-shadow: 0 0 50px rgba(203, 36, 49, 0.5); border-radius: 8px; text-align: center; font-family: monospace; font-size: 14px; border: 2px solid #cb2431; z-index: 100; width: 80%; max-width: 300px;}
     </style>
 </head>
 <body id="main-body">
@@ -59,8 +83,8 @@
             <tr><th>Name</th><th>Last modified</th><th>Size</th><th>Description</th></tr>
             <tr><td><a href="../">../</a></td><td></td><td>-</td><td></td></tr>
             <tr><td><a href="#" onclick="triggerTrap(event)">admin_passwords.txt</a></td><td>19-Feb-2026 08:32</td><td>12K</td><td>[管理员密码本]</td></tr>
-            <tr><td><a href="#" onclick="triggerTrap(event)">black_market_nodes.json</a></td><td>20-Feb-2026 14:11</td><td>856K</td><td>[全链路监测节点配置]</td></tr>
-            <tr><td><a href="#" onclick="triggerTrap(event)">core_database_dump.sql</a></td><td>21-Feb-2026 02:00</td><td>4.2M</td><td>[核心数据库完整备份]</td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">black_market_nodes.json</a></td><td>20-Feb-2026 14:11</td><td>856K</td><td>[全链路监测配置]</td></tr>
+            <tr><td><a href="#" onclick="triggerTrap(event)">core_database_dump.sql</a></td><td>21-Feb-2026 02:00</td><td>4.2M</td><td>[核心数据库备份]</td></tr>
             <tr><td><a href="#" onclick="triggerTrap(event)">config.ini.bak</a></td><td>15-Feb-2026 11:22</td><td>4K</td><td>[系统环境配置]</td></tr>
         </table>
         <hr>
@@ -72,31 +96,31 @@
             <div class="waf-header">
                 <div>
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    连接已阻断 (Connection Blocked)
+                    连接已阻断
                 </div>
-                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">Event ID: <span id="ray-id"></span></div>
+                <div style="font-size: 12px; font-weight: normal; opacity: 0.8;">Event: <span id="ray-id"></span></div>
             </div>
             
             <div class="waf-body">
                 <div class="alert-banner">
                     <strong>高危安全策略违规提示：</strong><br>
-                    您的终端发起了敏感目录遍历及文件越权请求。此行为已触发“全链路在线黑产监测与阻断系统”的联邦级防御机制。请不要关闭页面，等待取证完成。
+                    您的终端发起了敏感目录遍历及文件越权请求。此行为已触发“全链路在线黑产监测与阻断系统”的联邦级防御机制。请等待取证完成。
                 </div>
 
                 <div class="trace-console" id="trace-box">
                     <div class="trace-line active" id="line-1">[*] 正在初始化实时威胁溯源模块...<span class="cursor" id="cursor-1"></span></div>
-                    <div class="trace-line" id="line-2">[+] 提取请求指纹 (User-Agent): <span class="text-blue" id="ua-text"></span><span class="cursor" id="cursor-2"></span></div>
+                    <div class="trace-line" id="line-2">[+] 提取请求指纹: <br><span class="text-blue" id="ua-text"></span><span class="cursor" id="cursor-2"></span></div>
                     <div class="trace-line" id="line-3">[*] <span class="text-yellow">正在穿透客户端代理层，剥离匿名伪装...</span><span class="cursor" id="cursor-3"></span></div>
-                    <div class="trace-line" id="line-4">[*] 调用云端审计接口 (Geo-IP API) 定位追踪...<span class="cursor" id="cursor-4"></span></div>
-                    <div class="trace-line" id="line-5">[!] <span class="text-red">锁定攻击源真实 IP: </span><span class="text-green" id="ip-text">正在解析...</span><span class="cursor" id="cursor-5"></span></div>
-                    <div class="trace-line" id="line-6">[!] <span class="text-red">锁定物理边界定位: </span><span class="text-green" id="geo-text">正在解析...</span><span class="cursor" id="cursor-6"></span></div>
-                    <div class="trace-line" id="line-7">[+] 终端特征与取证数据已自动上报至云端安全中心。<span class="cursor" id="cursor-7"></span></div>
+                    <div class="trace-line" id="line-4">[*] 调用云端审计接口 (Geo-IP) 定位追踪...<span class="cursor" id="cursor-4"></span></div>
+                    <div class="trace-line" id="line-5">[!] <span class="text-red">锁定真实 IP: </span><span class="text-green" id="ip-text">正在解析...</span><span class="cursor" id="cursor-5"></span></div>
+                    <div class="trace-line" id="line-6">[!] <span class="text-red">锁定物理边界: </span><span class="text-green" id="geo-text">正在解析...</span><span class="cursor" id="cursor-6"></span></div>
+                    <div class="trace-line" id="line-7">[+] 终端特征与取证数据已自动上报至云端。<span class="cursor" id="cursor-7"></span></div>
                 </div>
 
                 <div class="threat-meter">
                     <div class="meter-label">
                         <span>当前终端威胁评估指数</span>
-                        <span style="color: #cb2431;" id="score-text">分析中... (0 / 100)</span>
+                        <span style="color: #cb2431;" id="score-text">分析中... (0)</span>
                     </div>
                     <div class="meter-bg">
                         <div class="meter-fill" id="meter-fill"></div>
@@ -114,12 +138,12 @@
     <div id="reveal-modal">
         <h2 style="color: #cb2431; margin-top: 0;">🎯 捕获成功！</h2>
         <p>你已触发专属主动防御蜜罐。</p>
-        <p>刚才解析出的 <span class="highlight" id="joke-ip" style="color:red; font-weight:bold;">IP</span> 和地址都是真的！</p>
-        <p style="font-size: 14px; color: #666; margin-top: 20px;">* 这只是个前端技术演示，未收集任何隐私数据。</p>
+        <p>刚才解析出的 <span id="joke-ip" style="color:red; font-weight:bold;">IP</span> 和地址都是真的！</p>
+        <p style="font-size: 12px; color: #666; margin-top: 15px;">* 这只是前端技术演示，未收集隐私数据。</p>
+        <button onclick="document.getElementById('reveal-modal').style.display='none'" style="margin-top:10px; padding:5px 10px; cursor:pointer;">关闭</button>
     </div>
 
     <script>
-        // 移除旧光标的辅助函数，让光标永远只停留在最新的一行
         function moveCursor(fromId, toId) {
             document.getElementById('cursor-' + fromId).style.display = 'none';
         }
@@ -130,38 +154,30 @@
             document.getElementById('fake-directory').style.display = 'none';
             document.getElementById('waf-alert').style.display = 'block';
 
-            document.getElementById('ray-id').innerText = Array.from({length: 12}, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
-            document.getElementById('time-text').innerText = new Date().toUTCString();
+            document.getElementById('ray-id').innerText = Array.from({length: 8}, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
+            document.getElementById('time-text').innerText = new Date().toLocaleTimeString();
             document.getElementById('ua-text').innerText = navigator.userAgent;
 
-            // ===== 核心时间轴控制 (毫秒) =====
-            // 1500ms (1.5秒) 后显示第二行 UA 信息
             setTimeout(() => { 
                 document.getElementById('line-2').classList.add('active'); 
                 moveCursor(1, 2);
             }, 1500);
 
-            // 3500ms (3.5秒) 后显示正在穿透代理 (吓唬人专用停顿)
             setTimeout(() => { 
                 document.getElementById('line-3').classList.add('active'); 
                 moveCursor(2, 3);
             }, 3500);
 
-            // 6000ms (6秒) 后显示调用 API
             setTimeout(() => { 
                 document.getElementById('line-4').classList.add('active'); 
                 moveCursor(3, 4);
-                
-                // 威胁指数条开始缓慢上涨
                 document.getElementById('meter-fill').style.width = '45%';
-                document.getElementById('score-text').innerText = '正在评估... (45 / 100)';
+                document.getElementById('score-text').innerText = '正在评估... (45)';
             }, 6000);
 
-            // 调用接口获取真实信息
             fetch('https://get.geojs.io/v1/ip/geo.json')
                 .then(response => response.json())
                 .then(data => {
-                    // 8500ms (8.5秒) 后爆出真实 IP
                     setTimeout(() => { 
                         document.getElementById('line-5').classList.add('active'); 
                         moveCursor(4, 5);
@@ -169,28 +185,24 @@
                         document.getElementById('joke-ip').innerText = data.ip; 
                     }, 8500);
 
-                    // 11000ms (11秒) 后爆出真实地理位置和宽带
                     setTimeout(() => { 
                         document.getElementById('line-6').classList.add('active'); 
                         moveCursor(5, 6);
                         let location = (data.city || data.region || '未知城市') + " - " + (data.organization || 'ISP');
                         document.getElementById('geo-text').innerText = location;
                         
-                        // 进度条拉满到 98
                         document.getElementById('meter-fill').style.width = '98%';
-                        document.getElementById('score-text').innerText = '98 / 100 (CRITICAL)';
+                        document.getElementById('score-text').innerText = '98 (CRITICAL)';
                         document.getElementById('score-text').style.fontWeight = 'bold';
                     }, 11000);
 
-                    // 13000ms (13秒) 后显示上报完成
                     setTimeout(() => {
                         document.getElementById('line-7').classList.add('active');
                         moveCursor(6, 7);
                     }, 13000);
                 })
                 .catch(() => {
-                    // 失败备用方案也拉长了时间
-                    setTimeout(() => { document.getElementById('line-5').classList.add('active'); moveCursor(4, 5); document.getElementById('ip-text').innerText = "获取失败 (防御拦截)"; }, 8500);
+                    setTimeout(() => { document.getElementById('line-5').classList.add('active'); moveCursor(4, 5); document.getElementById('ip-text').innerText = "获取失败"; }, 8500);
                     setTimeout(() => { document.getElementById('line-6').classList.add('active'); moveCursor(5, 6); document.getElementById('geo-text').innerText = "获取失败"; }, 11000);
                     setTimeout(() => { document.getElementById('line-7').classList.add('active'); moveCursor(6, 7); }, 13000);
                 });
