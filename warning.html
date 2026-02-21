@@ -16,6 +16,7 @@
         #terminal {
             white-space: pre-wrap;
             line-height: 1.5;
+            display: inline;
         }
         .blinking-cursor {
             font-weight: bold;
@@ -23,7 +24,6 @@
             animation: blink 1s step-end infinite;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .green { color: #00ff00; }
         .reveal { font-size: 24px; color: #00ff00; display: none; margin-top: 30px; font-weight: bold; }
     </style>
 </head>
@@ -36,14 +36,11 @@
     </div>
 
     <script>
-        // 获取访客真实的浏览器信息，用来唬人
         const userAgent = navigator.userAgent;
         const platform = navigator.platform;
-
         const terminal = document.getElementById('terminal');
         const reveal = document.getElementById('reveal');
         
-        // 伪造的入侵日志序列
         const logs = [
             "[!] 警告：系统检测到未授权的非法访问尝试！",
             "[!] 正在触发反制协议 (Active Defense Protocol)...",
@@ -64,20 +61,21 @@
 
         let lineIndex = 0;
 
-       function printLog() {
+        function printLog() {
             if (lineIndex < logs.length) {
-                // ... 前面的代码保持不变 ...
+                terminal.innerHTML += logs[lineIndex] + "<br>";
+                lineIndex++;
+                setTimeout(printLog, Math.random() * 700 + 300);
             } else {
-                // 日志打印完后，显示最终的揭秘信息
+                // 这里我已经帮你改成了 5000 (5秒)，且确保语法正确！
                 setTimeout(() => {
                     reveal.style.display = "block";
                     document.body.style.backgroundColor = "#000000";
                     terminal.style.color = "#8b949e";
-                }, 5000); // <--- 注意看这个数字
+                }, 5000); 
             }
         }
 
-        // 延迟 0.5 秒开始执行恶作剧
         setTimeout(printLog, 500);
     </script>
 </body>
