@@ -30,8 +30,9 @@
 <body>
     <div id="terminal"></div><span class="blinking-cursor">_</span>
     <div id="reveal" class="reveal">
-        [✓] 哈哈哈<br>
-      
+        [✓] 哈哈哈，开个玩笑！<br>
+        [✓] 你已触发 吴鹏举 的主页防御蜜罐。<br>
+        [✓] 放心，没有任何数据被窃取。欢迎来到我的地盘！
     </div>
 
     <script>
@@ -63,7 +64,7 @@
 
         let lineIndex = 0;
 
-        function printLog() {
+       function printLog() {
             if (lineIndex < logs.length) {
                 // ... 前面的代码保持不变 ...
             } else {
@@ -72,7 +73,7 @@
                     reveal.style.display = "block";
                     document.body.style.backgroundColor = "#000000";
                     terminal.style.color = "#8b949e";
-                }, 1500); // <--- 注意看这个数字
+                }, 5000); // <--- 注意看这个数字
             }
         }
 
